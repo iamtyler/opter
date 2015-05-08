@@ -83,22 +83,6 @@ pub struct Opts<I> where I : Iterator<Item = String> {
 }
 
 impl<I> Opts<I> where I : Iterator<Item = String> {
-    pub fn parse<II> (values : II) -> Opts<II::IntoIter>
-        where II : IntoIterator<Item = String, IntoIter = I>
-    {
-        return Opts {
-            iter  : values.into_iter(),
-            flags : Vec::new(),
-            name  : String::new(),
-            drain : false,
-            done  : false,
-        };
-    }
-
-    pub fn parse_env () -> Opts<iter::Skip<env::Args>> {
-        return Opts::parse(env::args().skip(1));
-    }
-
     fn next_opt (&mut self) -> Option<Opt> {
         // Check for done
         if self.done {
@@ -213,6 +197,31 @@ impl<I> Iterator for Opts<I> where I : Iterator<Item = String> {
 
 /****************************************************************************
 *
+*   Public functions
+*
+***/
+
+pub fn parse<I, II> (values : II) -> Opts<II::IntoIter> where
+    I : Iterator<Item = String>,
+    II : IntoIterator<Item = String, IntoIter = I>
+{
+    return Opts {
+        iter  : values.into_iter(),
+        flags : Vec::new(),
+        name  : String::new(),
+        drain : false,
+        done  : false,
+    };
+}
+
+pub fn parse_env () -> Opts<iter::Skip<env::Args>> {
+    return parse(env::args().skip(1));
+}
+
+
+
+/****************************************************************************
+*
 *   Tests
 *
 ***/
@@ -220,14 +229,13 @@ impl<I> Iterator for Opts<I> where I : Iterator<Item = String> {
 #[cfg(test)]
 mod tests {
     use super::Opt;
-    use super::Opts;
 
     fn args_from_str (s : &str) -> Vec<String> {
         return s.split(" ").map(|s| s.to_string()).collect();
     }
 
     fn options_from_str (s : &str) -> Vec<Opt> {
-        return Opts::parse(args_from_str(s)).collect();
+        return super::parse(args_from_str(s)).collect();
     }
 
     #[test]
