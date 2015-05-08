@@ -1,4 +1,9 @@
 [package]
 name = "opter"
+description = "Turn a series of strings into options exposed as an iterator."
 version = "0.1.0"
 authors = ["Tyler Cole <tyler@iamtyler.com>"]
+license = "MIT"
+readme = "README.md"
+keywords = ["options"]
+repository = "https://github.com/iamtyler/opter"
