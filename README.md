@@ -4,6 +4,7 @@ Turn a series of strings into options exposed as an iterator.
 
 [![Build Status](https://travis-ci.org/iamtyler/opter.svg?branch=master)](https://travis-ci.org/iamtyler/opter)
 [![](http://meritbadge.herokuapp.com/opter)](https://crates.io/crates/opter)
+[![Coverage Status](https://coveralls.io/repos/iamtyler/opter/badge.svg)](https://coveralls.io/r/iamtyler/opter)
 
 ## Option
 
