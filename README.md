@@ -2,6 +2,8 @@
 
 Turn a series of strings into options exposed as an iterator.
 
+[![Build Status](https://travis-ci.org/iamtyler/opter.svg?branch=master)](https://travis-ci.org/iamtyler/opter)
+
 ## Option
 
 When parsed, input strings are determined to be one of two types: a name or a value. From the sequence of names and values, the type of option is determined. It is one of:
