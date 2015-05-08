@@ -17,3 +17,7 @@ Names come in two different types: short and long names. Long names start with `
 ### Special Values
 
 `-` alone is treated as a value. `--` signifies the end of options and is not emitted. All strings after `--` are passed along as a Value option.
+
+## Using opter
+
+`opter` consumes iterators over strings, or `Iterator<Item = String>`. To use opter, pass a struct that has an implementation for `IntoIterator` to `opter::parse`. Parsing command-line options is a common use case that is met by `opter::parse_env`.
