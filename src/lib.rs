@@ -32,39 +32,11 @@ use std::iter;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
-pub struct NamedOpt {
-    pub name : String,
-    pub value : String,
-}
-
-#[derive(Debug)]
-#[derive(PartialEq)]
 pub enum Opt {
     Flag(String),
-    Named(NamedOpt),
+    Named(String, String),
     Ordinal(String),
-    Value(String),
-}
-
-impl Opt {
-    pub fn flag_from_str (name : &str) -> Opt {
-        return Opt::Flag(name.to_string());
-    }
-
-    pub fn named_from_str (name : &str, value : &str) -> Opt {
-        return Opt::Named(NamedOpt {
-            name : name.to_string(),
-            value : value.to_string()
-        });
-    }
-
-    pub fn ordinal_from_str (value : &str) -> Opt {
-        return Opt::Ordinal(value.to_string());
-    }
-
-    pub fn value_from_str (value : &str) -> Opt {
-        return Opt::Value(value.to_string());
-    }
+    Raw(String),
 }
 
 
@@ -117,7 +89,7 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
 
         // If draining just send along the value
         if self.drain {
-            return Some(Opt::Value(value));
+            return Some(Opt::Raw(value));
         }
 
         // Handle -- value
@@ -165,10 +137,7 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
                 // Previous was name, current is ordinal, so current as named
                 name = self.name.clone();
                 self.name.clear();
-                return Some(Opt::Named(NamedOpt {
-                    name  : name,
-                    value : value
-                }));
+                return Some(Opt::Named(name, value));
             }
         }
         else if !name.is_empty() {
@@ -238,20 +207,36 @@ mod tests {
         return super::parse(args_from_str(s)).collect();
     }
 
+    fn flag_from_str (name : &str) -> Opt {
+        return Opt::Flag(name.to_string());
+    }
+
+    fn named_from_str (name : &str, value : &str) -> Opt {
+        return Opt::Named(name.to_string(), value.to_string());
+    }
+
+    fn ordinal_from_str (value : &str) -> Opt {
+        return Opt::Ordinal(value.to_string());
+    }
+
+    fn raw_from_str (value : &str) -> Opt {
+        return Opt::Raw(value.to_string());
+    }
+
     #[test]
     fn full () {
         let actual = options_from_str("a -bc -d e --f g - h -- i -j --k");
         let spec = vec![
-            Opt::ordinal_from_str("a"),
-            Opt::flag_from_str("b"),
-            Opt::flag_from_str("c"),
-            Opt::named_from_str("d", "e"),
-            Opt::named_from_str("f", "g"),
-            Opt::ordinal_from_str("-"),
-            Opt::ordinal_from_str("h"),
-            Opt::value_from_str("i"),
-            Opt::value_from_str("-j"),
-            Opt::value_from_str("--k"),
+            ordinal_from_str("a"),
+            flag_from_str("b"),
+            flag_from_str("c"),
+            named_from_str("d", "e"),
+            named_from_str("f", "g"),
+            ordinal_from_str("-"),
+            ordinal_from_str("h"),
+            raw_from_str("i"),
+            raw_from_str("-j"),
+            raw_from_str("--k"),
         ];
 
         assert_eq!(actual, spec);
@@ -261,9 +246,9 @@ mod tests {
     fn trailing_flag () {
         let actual = options_from_str("a b -c");
         let spec = vec![
-            Opt::ordinal_from_str("a"),
-            Opt::ordinal_from_str("b"),
-            Opt::flag_from_str("c"),
+            ordinal_from_str("a"),
+            ordinal_from_str("b"),
+            flag_from_str("c"),
         ];
 
         assert_eq!(actual, spec);
