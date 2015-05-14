@@ -1,7 +1,7 @@
 [package]
 name = "opter"
 description = "Turn a series of strings into options exposed as an iterator."
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Tyler Cole <tyler@iamtyler.com>"]
 license = "MIT"
 readme = "README.md"
