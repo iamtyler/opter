@@ -16,7 +16,7 @@ When parsed, input strings are determined to be one of two types: a name or a va
 
 ### Names
 
-Names come in two different types: short and long names. Long names start with `--` and short names with `-`. Short name Flags can be stacked, for example `-abc` represents the flags `a`, `b`, and `c`.
+Names come in two different types: short (1 `char`) and long (2+ `char`s). Long names start with `--` and short names with `-`. Short name Flags can be stacked, for example `-abc` represents the flags `a`, `b`, and `c`.
 
 ### Special Values
 
