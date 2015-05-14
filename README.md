@@ -20,7 +20,7 @@ Names come in two different types: short and long names. Long names start with `
 
 ### Special Values
 
-`-` alone is treated as a value. `--` signifies the end of options and is not emitted. All strings after `--` are passed along as a Value option.
+`-` alone is treated as a value. `--` signifies the end of options and is not emitted. All strings after `--` are passed along as a Raw option.
 
 ## Using opter
 
