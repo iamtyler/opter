@@ -12,7 +12,7 @@ When parsed, input strings are determined to be one of two types: a name or a va
 * **Flag** is a name without a value
 * **Ordinal** is a value without a name
 * **Named** is a value with a name
-* **Value** is simply a raw input string
+* **Raw** is simply a raw input string
 
 ### Names
 
