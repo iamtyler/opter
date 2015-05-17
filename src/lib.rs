@@ -42,19 +42,19 @@ pub enum Opt {
 
 /****************************************************************************
 *
-*   Opts
+*   OptIter
 *
 ***/
 
-pub struct Opts<I> where I : Iterator<Item = String> {
+pub struct OptIter<I> where I : Iterator<Item = String> {
     iter  : I,
     flags : Vec<char>,
     name  : String,
-    drain : bool,
+    raw   : bool,
     done  : bool,
 }
 
-impl<I> Opts<I> where I : Iterator<Item = String> {
+impl<I> OptIter<I> where I : Iterator<Item = String> {
     fn next_opt (&mut self) -> Option<Opt> {
         // Check for done
         if self.done {
@@ -66,16 +66,16 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
             return Some(Opt::Flag(c.to_string()));
         }
 
-        // Get next value
-        let value;
+        // Get next
+        let arg;
         match self.iter.next() {
-            Some(a) => value = a,
+            Some(a) => arg = a,
             None => {
                 // Iterator is done
                 self.done = true;
 
                 if !self.name.is_empty() {
-                    // Previous value was a name so emit a flag
+                    // Previous was a name so emit a flag
                     let temp = self.name.clone();
                     self.name.clear();
                     return Some(Opt::Flag(temp));
@@ -87,33 +87,33 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
             }
         }
 
-        // If draining just send along the value
-        if self.drain {
-            return Some(Opt::Raw(value));
+        // If raw just send it along
+        if self.raw {
+            return Some(Opt::Raw(arg));
         }
 
-        // Handle -- value
-        if value == "--" {
-            self.drain = true;
+        // Handle --
+        if arg == "--" {
+            self.raw = true;
             return self.next_opt();
         }
 
         // Parse as name or flags
         let mut name = String::new();
-        if value.starts_with("--") {
-            name.push_str(&value[2..]);
+        if arg.starts_with("--") {
+            name.push_str(&arg[2..]);
         }
-        else if value.starts_with("-") {
-            if value.chars().count() > 2 {
+        else if arg.starts_with("-") {
+            if arg.chars().count() > 2 {
                 // Parse flags
-                for c in value.chars().skip(1) {
+                for c in arg.chars().skip(1) {
                     self.flags.push(c);
                 }
                 self.flags.reverse();
             }
             else {
                 // Save single char name
-                name.push_str(&value[1..]);
+                name.push_str(&arg[1..]);
             }
         }
 
@@ -137,7 +137,7 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
                 // Previous was name, current is ordinal, so current as named
                 name = self.name.clone();
                 self.name.clear();
-                return Some(Opt::Named(name, value));
+                return Some(Opt::Named(name, arg));
             }
         }
         else if !name.is_empty() {
@@ -151,11 +151,11 @@ impl<I> Opts<I> where I : Iterator<Item = String> {
         }
 
         // Previous was not name, current is ordinal, so current as ordinal
-        return Some(Opt::Ordinal(value));
+        return Some(Opt::Ordinal(arg));
     }
 }
 
-impl<I> Iterator for Opts<I> where I : Iterator<Item = String> {
+impl<I> Iterator for OptIter<I> where I : Iterator<Item = String> {
     type Item = Opt;
 
     fn next (&mut self) -> Option<Opt> {
@@ -170,23 +170,22 @@ impl<I> Iterator for Opts<I> where I : Iterator<Item = String> {
 *
 ***/
 
-pub fn parse<I, II> (values : II) -> Opts<II::IntoIter> where
+pub fn parse<I, II> (values : II) -> OptIter<II::IntoIter> where
     I : Iterator<Item = String>,
     II : IntoIterator<Item = String, IntoIter = I>
 {
-    return Opts {
+    return OptIter {
         iter  : values.into_iter(),
         flags : Vec::new(),
         name  : String::new(),
-        drain : false,
+        raw   : false,
         done  : false,
     };
 }
 
-pub fn parse_env () -> Opts<iter::Skip<env::Args>> {
+pub fn parse_env () -> OptIter<iter::Skip<env::Args>> {
     return parse(env::args().skip(1));
 }
-
 
 
 /****************************************************************************
