@@ -47,7 +47,7 @@ pub enum Opt {
 ***/
 
 pub struct OptIter<I> where I : Iterator<Item = String> {
-    iter  : I,
+    args  : I,
     flags : Vec<char>,
     name  : String,
     raw   : bool,
@@ -68,7 +68,7 @@ impl<I> OptIter<I> where I : Iterator<Item = String> {
 
         // Get next
         let arg;
-        match self.iter.next() {
+        match self.args.next() {
             Some(a) => arg = a,
             None => {
                 // Iterator is done
@@ -175,7 +175,7 @@ pub fn parse<I, II> (values : II) -> OptIter<II::IntoIter> where
     II : IntoIterator<Item = String, IntoIter = I>
 {
     return OptIter {
-        iter  : values.into_iter(),
+        args  : values.into_iter(),
         flags : Vec::new(),
         name  : String::new(),
         raw   : false,
